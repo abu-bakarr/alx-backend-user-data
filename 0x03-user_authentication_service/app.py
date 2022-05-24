@@ -69,3 +69,20 @@ def logout() -> str:
         abort(403)
     AUTH.destroy_session(u.id)
     return redirect('/')
+
+
+@app.route('/profile', methods=['GET'], strict_slashes=False)
+def profile() -> str:
+    """
+    Profile route
+    checks if the User have a session ID
+    and then provides its info
+    """
+    s_id = request.cookies.get("session_id")
+    if not s_id:
+        abort(403)
+    u = AUTH.get_user_from_session_id(s_id)
+    if u:
+        return jsonify({"email": u.email})
+    else:
+        abort(403)
