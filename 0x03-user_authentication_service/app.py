@@ -34,3 +34,21 @@ def reg_user() -> str:
         return jsonify({"email": email, "message": "user created"})
     except ValueError:
         return jsonify({"message": "email already registered"}), 400
+
+
+@app.route('/sessions', methods=['POST'], strict_slashes=False)
+def login() -> str:
+    """
+    Login route
+    Logs a user in
+    and sets the session id's cookie
+    """
+    email = request.form.get('email')
+    password = request.form.get('password')
+    if AUTH.valid_login(email, password):
+        s_id = AUTH.create_session(email)
+        resp = jsonify({"email": email, "message": "logged in"})
+        resp.set_cookie('session_id', s_id)
+        return resp
+    else:
+        abort(401)
