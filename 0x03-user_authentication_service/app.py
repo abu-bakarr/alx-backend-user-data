@@ -52,3 +52,20 @@ def login() -> str:
         return resp
     else:
         abort(401)
+
+
+@app.route('/sessions', methods=['DELETE'], strict_slashes=False)
+def logout() -> str:
+    """
+    Logout route
+    logs a User out
+    and removes its session ID
+    """
+    s_id = request.cookies.get("session_id")
+    if not s_id:
+        abort(403)
+    u = AUTH.get_user_from_session_id(s_id)
+    if not u:
+        abort(403)
+    AUTH.destroy_session(u.id)
+    return redirect('/')
